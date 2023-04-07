@@ -150,7 +150,7 @@ pub fn rpc_client(_args: TokenStream, input: TokenStream) -> TokenStream {
                         )
                     };
                 let f = quote! {
-                    fn #name(#inputs) -> Result<#ret, rpc::Error> {
+                    fn #name(#inputs) -> Result<#ret, ::bma_jrpc::Error> {
                         #input_struct
                         #output_struct
                         let response: #response_tp = self.get_rpc_client().call(
@@ -162,19 +162,19 @@ pub fn rpc_client(_args: TokenStream, input: TokenStream) -> TokenStream {
             }
         }
         let f = quote! {
-            trait #name<X:Rpc> {
+            trait #name<X: ::bma_jrpc::Rpc> {
                 #(#methods)*
                 fn get_rpc_client(&self) -> &X;
             }
-            struct #struct_name<X: Rpc> {
+            struct #struct_name<X: ::bma_jrpc::Rpc> {
                 client: X
             }
-            impl<X: Rpc> #struct_name<X> {
+            impl<X: ::bma_jrpc::Rpc> #struct_name<X> {
                 fn new(client: X) -> Self {
                     Self { client }
                 }
             }
-            impl<X: Rpc> #name<X> for #struct_name<X> {
+            impl<X: ::bma_jrpc::Rpc> #name<X> for #struct_name<X> {
                 fn get_rpc_client(&self) -> &X {
                     &self.client
                 }
