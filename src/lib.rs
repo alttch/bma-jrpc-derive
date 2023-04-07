@@ -59,7 +59,8 @@ pub fn rpc_client(_args: TokenStream, input: TokenStream) -> TokenStream {
                     Ok(v) => v,
                     Err(e) => return TokenStream::from(e.write_errors()),
                 };
-                let name = if let Some(name) = attrs.name {
+                let method_name = method.sig.ident.clone();
+                let rpc_method_name = if let Some(name) = attrs.name {
                     Ident::new(&name, Span::call_site())
                 } else {
                     method.sig.ident
@@ -150,11 +151,11 @@ pub fn rpc_client(_args: TokenStream, input: TokenStream) -> TokenStream {
                         )
                     };
                 let f = quote! {
-                    fn #name(#inputs) -> Result<#ret, ::bma_jrpc::Error> {
+                    fn #method_name(#inputs) -> Result<#ret, ::bma_jrpc::Error> {
                         #input_struct
                         #output_struct
                         let response: #response_tp = self.get_rpc_client().call(
-                            stringify!(#name), #payload)?;
+                            stringify!(#rpc_method_name), #payload)?;
                         #out
                     }
                 };
